@@ -1,0 +1,43 @@
+node{
+
+def mavenHome = tool name: "maven3.6.3"
+
+properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '3', daysToKeepStr: '', numToKeepStr: '3')), pipelineTriggers([pollSCM('* * * * *')])])
+
+stage('Get the Code from GitHub')
+{
+git branch: 'development', credentialsId: 'b84f3319-2033-4546-ba52-b73b1f299e17', url: 'https://github.com/panchalsantosh8286/maven-web-application.git'
+}
+
+stage('Build the package')
+{
+sh "${mavenHome}/bin/mvn clean package"
+}
+
+stage('Generating the SonarQube Report')
+{
+sh "${mavenHome}/bin/mvn sonar:sonar"
+}
+
+stage('Uploading artifact into Nexus repository')
+{
+sh "${mavenHome}/bin/mvn deploy"
+}
+
+stage('Deploy the application into Tomcat Server')
+{
+sshagent(['08c51b32-c22c-4259-8869-b25877d8ac56']) {
+    sh 'scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@13.233.186.195:/opt/apache-tomcat-9.0.46/webapps/' 
+	}
+}
+
+stage('Send email notification')
+{
+emailext body: '''Build Over...
+
+Thanks
+Santosh Panchal
+''', subject: 'Build Notification Mail', to: 'panchal.vivaan2015@gmail.com'
+}
+
+}

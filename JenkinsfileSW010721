@@ -14,8 +14,7 @@ stage('Build the package')
 sh "${mavenHome}/bin/mvn clean package"
 }
 
-
-*/
+/*
 stage('Generating the SonarQube Report')
 {
 sh "${mavenHome}/bin/mvn sonar:sonar"
@@ -41,5 +40,5 @@ Thanks
 Santosh Panchal
 ''', subject: 'Build Notification Mail', to: 'panchal.vivaan2015@gmail.com'
 }
-/*
+*/
 }

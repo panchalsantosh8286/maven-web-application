@@ -1,0 +1,66 @@
+#pipeline script - Declarative-way
+
+pipeline{
+
+agent any;
+
+tools{
+
+maven'maven3.6.3'
+
+}
+
+options{
+
+timestamps()
+
+}
+
+stages{
+
+	stage ('Get the code fro GitHub'){
+	steps{
+	git branch: 'development', credentialsId: '74040a08-fe92-4f3f-a428-606ab50316a2', url: 'https://github.com/panchalsantosh8286/maven-web-application.git'
+	}
+	}
+	
+	stage ('Build the package'){
+	steps{
+	sh"mvn clean package"
+	}
+	}
+	
+  /*
+	stage ('Generating the SonarQube Report'){
+	steps{
+	sh"mvn sonar:sonar"
+	}
+	}
+	
+	stage ('Copy the artifact into Nexus repository'){
+	steps{
+	sh"mvn deploy"
+	}
+	}
+	
+	stage ('Deploy application into Tomcat server'){
+	steps{
+			sshagent(['bc6b2f1d-8ecb-48aa-bc74-3a02ba4bf9cc']) {
+ sh 'scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@13.235.242.176:/opt/apache-tomcat-9.0.46/webapps/'
+}
+		}
+	}
+		
+ */   
+}
+
+post{
+success{
+	emailext body: '''Build Over....Success
+
+Thanks
+Santosh Panchal''', subject: 'Build Over.....Successfully', to: 'panchal.vivaan2015@gmail.com'
+}
+}
+
+}

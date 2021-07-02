@@ -1,5 +1,3 @@
-#pipeline script - Declarative-way
-
 pipeline{
 
 agent any;
